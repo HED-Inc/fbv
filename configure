@@ -107,9 +107,9 @@ xdir="/usr/X11R6"
 ungif="no"
 echo "libungif check" >>./config.log
 echo "  1st:" >>./config.log
-$CC 2>>./config.log >>./config.log -o \$\$~test \$\$~test.c -lungif $libs
+$CC 2>>./config.log >>./config.log -o \$\$~test \$\$~test.c -lgif $libs
 if [ -e \$\$~test ]; then
-	libs="-lungif $libs" ; ungif="yes"
+	libs="-lgif $libs" ; ungif="yes"
 else
 	echo "  2nd: -lX11 -L$xdir/lib" >>./config.log
 	$CC 2>>./config.log >>./config.log -o \$\$~test \$\$~test.c -lungif -lX11 -L$xdir/lib $libs
