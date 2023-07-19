@@ -18,8 +18,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <linux/fb.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -31,6 +29,7 @@
 #include <asm/types.h>
 #include <string.h>
 #include <errno.h>
+#include <linux/fb.h>
 #include "config.h"
 /* Public Use Functions:
  *
