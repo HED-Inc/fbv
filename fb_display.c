@@ -298,6 +298,14 @@ inline static unsigned short make15color(unsigned char r, unsigned char g, unsig
 	 ((b >> 3) & 31)        );
 }
 
+inline static unsigned short make15color_bgr(unsigned char r, unsigned char g, unsigned char b)
+{
+    return (
+	(((b >> 3) & 31) << 10) |
+	(((g >> 3) & 31) << 5)  |
+	 ((r >> 3) & 31)        );
+}
+
 inline static unsigned short make16color(unsigned char r, unsigned char g, unsigned char b)
 {
     return (
@@ -314,6 +322,14 @@ void* convertRGB2FB(int fh, unsigned char *rgbbuff, unsigned long count, int bpp
     u_int16_t *s_fbbuff;
     u_int32_t *i_fbbuff;
 
+    int is_bgr555 = 0;
+    struct fb_var_screeninfo var;
+    getVarScreenInfo(fh, &var);
+    if(var.red.offset == 0 && 
+       var.green.offset == 5 && 
+       var.blue.offset == 10)
+	is_bgr555 = 1;
+
     switch(bpp)
     {
 	case 8:
@@ -326,15 +342,23 @@ void* convertRGB2FB(int fh, unsigned char *rgbbuff, unsigned long count, int bpp
 	case 15:
 	    *cpp = 2;
 	    s_fbbuff = (unsigned short *) malloc(count * sizeof(unsigned short));
-	    for(i = 0; i < count ; i++)
-		s_fbbuff[i] = make15color(rgbbuff[i*3], rgbbuff[i*3+1], rgbbuff[i*3+2]);
+	    if(is_bgr555)
+	    	for(i = 0; i < count ; i++)
+		    s_fbbuff[i] = make15color_bgr(rgbbuff[i*3], rgbbuff[i*3+1], rgbbuff[i*3+2]);
+	    else
+	    	for(i = 0; i < count ; i++)
+		    s_fbbuff[i] = make15color(rgbbuff[i*3], rgbbuff[i*3+1], rgbbuff[i*3+2]);
 	    fbbuff = (void *) s_fbbuff;
 	    break;
 	case 16:
 	    *cpp = 2;
 	    s_fbbuff = (unsigned short *) malloc(count * sizeof(unsigned short));
-	    for(i = 0; i < count ; i++)
-		s_fbbuff[i] = make16color(rgbbuff[i*3], rgbbuff[i*3+1], rgbbuff[i*3+2]);
+	    if(is_bgr555)
+	    	for(i = 0; i < count ; i++)
+		    s_fbbuff[i] = make15color_bgr(rgbbuff[i*3], rgbbuff[i*3+1], rgbbuff[i*3+2]);
+	    else
+	    	for(i = 0; i < count ; i++)
+		    s_fbbuff[i] = make16color(rgbbuff[i*3], rgbbuff[i*3+1], rgbbuff[i*3+2]);
 	    fbbuff = (void *) s_fbbuff;
 	    break;
 	case 24:
